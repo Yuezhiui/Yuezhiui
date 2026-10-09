@@ -1,0 +1,57 @@
+name: Refresh profile graphics
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - README.md
+      - assets/hero.svg
+      - .github/workflows/update-profile.yml
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: generate-profile-graphics
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Generate GitHub statistics
+        uses: stats-organization/github-readme-stats-action@v2
+        with:
+          card: stats
+          options: username=${{ github.repository_owner }}&show_icons=true&include_all_commits=true&bg_color=0D1117&title_color=A78BFA&text_color=C9D1D9&icon_color=6EE7B7&border_color=30363D
+          path: assets/github-stats.svg
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate top languages
+        uses: stats-organization/github-readme-stats-action@v2
+        with:
+          card: top-langs
+          options: username=${{ github.repository_owner }}&layout=compact&langs_count=8&bg_color=0D1117&title_color=A78BFA&text_color=C9D1D9&border_color=30363D
+          path: assets/top-languages.svg
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate snake animation
+        uses: Platane/snk/svg-only@v3
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          outputs: |
+            assets/contribution-snake.svg?palette=github-light&color_snake=8B5CF6
+            assets/contribution-snake-dark.svg?palette=github-dark&color_snake=6EE7B7
+      - name: Commit generated graphics
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/*.svg
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: refresh profile graphics [skip ci]"
+            git push
+          fi
