@@ -8,7 +8,7 @@
 
 ## Hello, world!
 
-I'm **Yuezhiui** — I enjoy building **interactive games**, **intelligent AI workflows**, **browser automation**, and creative tools.
+I'm **Yuezhiui**  I enjoy building **interactive games**, **intelligent AI workflows**, **browser automation**, and creative tools.
 
 | 🎮 Educational games | 🤖 AI & automation | 🎬 Creative technology |
 | :--- | :--- | :--- |
